@@ -120,7 +120,7 @@ const AppRoutes = () => {
           }
         />
 
-        {/* Catch all route - redirect to login if not authenticated, home if authenticated */}
+        {/* Catch all route - redirect to login if Authentication required, home if authenticated */}
         <Route
           path="*"
           element={

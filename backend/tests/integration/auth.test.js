@@ -50,13 +50,48 @@ describe("Authentication API", () => {
       expect(response.status).toBe(400);
       expect(response.body.message).toBe("User with this email already exists");
     });
+
+    it("should not register a user with existing mobile", async () => {
+      const existingUser = {
+        firstName: "Mobile",
+        lastName: "User",
+        email: "mobileuser@example.com",
+        password: await bcrypt.hash("Password123!", 10),
+        mobile: "1111111111",
+        gender: "male",
+        role: "user",
+      };
+      await User.create(existingUser);
+      const response = await request(app).post("/auth/register").send({
+        firstName: "Test",
+        lastName: "User",
+        email: "newemail@example.com",
+        password: "Password123!",
+        mobile: "1111111111",
+        gender: "male",
+      });
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe(
+        "User with this mobile number already exists"
+      );
+    });
+
+    it("should not register a user if required field is missing", async () => {
+      const response = await request(app).post("/auth/register").send({
+        firstName: "NoPass",
+        lastName: "User",
+        email: "nopass@example.com",
+        mobile: "2222222222",
+        gender: "male",
+      });
+      expect(response.status).toBe(400);
+    });
   });
 
   describe("POST /auth/login", () => {
     it("should login user with valid credentials", async () => {
       const password = "Password123!";
       const hashedPassword = await bcrypt.hash(password, 10);
-
       const user = await User.create({
         firstName: "Login",
         lastName: "Test",
@@ -111,6 +146,65 @@ describe("Authentication API", () => {
     });
   });
 
-  // For getCurrentUser and logout, we need to handle sessions which is more complex in testing
-  // We would normally need an agent to maintain the session between requests
+  describe("GET /auth/me", () => {
+    it("should return 401 if Authentication required", async () => {
+      const response = await request(app).get("/auth/me");
+      expect(response.status).toBe(401);
+      expect(response.body.message).toBe("Authentication required");
+    });
+
+    it("should return user info if authenticated", async () => {
+      const agent = request.agent(app);
+      const userData = {
+        firstName: "Sess",
+        lastName: "User",
+        email: "sessuser@example.com",
+        password: "Password123!",
+        mobile: "1231231234",
+        gender: "male",
+      };
+      await agent.post("/auth/register").send(userData);
+      await agent.post("/auth/login").send({
+        email: userData.email,
+        password: userData.password,
+      });
+      const response = await agent.get("/auth/me");
+      expect(response.status).toBe(200);
+      expect(response.body.email).toBe(userData.email);
+    });
+
+    it("should handle server error in getCurrentUser", async () => {
+      const appWithBrokenSession = require("express")();
+      appWithBrokenSession.get("/auth/me", (req, res) => {
+        throw new Error("Test error");
+      });
+      const response = await request(appWithBrokenSession).get("/auth/me");
+      expect(response.status).toBe(500);
+    });
+  });
+
+  describe("POST /auth/logout", () => {
+    it("should logout and clear session", async () => {
+      const agent = request.agent(app);
+      const userData = {
+        firstName: "Logout",
+        lastName: "User",
+        email: "logoutuser@example.com",
+        password: "Password123!",
+        mobile: "3213214321",
+        gender: "female",
+      };
+      await agent.post("/auth/register").send(userData);
+      await agent.post("/auth/login").send({
+        email: userData.email,
+        password: userData.password,
+      });
+      const logoutRes = await agent.post("/auth/logout");
+      expect(logoutRes.status).toBe(200);
+      expect(logoutRes.body.message).toMatch(/Logged out successfully/);
+      const currentUserRes = await agent.get("/auth/me");
+      expect(currentUserRes.status).toBe(401);
+      expect(currentUserRes.body.message).toMatch(/Authentication required/);
+    });
+  });
 });

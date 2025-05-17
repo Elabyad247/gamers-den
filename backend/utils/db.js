@@ -4,6 +4,9 @@ const MONGODB_URI = "mongodb://localhost:27017/gamers-den";
 
 const connectDB = async () => {
   try {
+    if (mongoose.connection.readyState === 1) {
+      return;
+    }
     await mongoose.connect(MONGODB_URI);
     console.log("Connected to MongoDB");
   } catch (error) {

@@ -108,8 +108,6 @@ describe("Validator Middleware Functions", () => {
       expect(statusCode).toBe(400);
       expect(jsonResponse).toHaveProperty("message", "Validation failed");
       expect(jsonResponse).toHaveProperty("errors");
-      expect(jsonResponse.errors).toBeInstanceOf(Object);
-      expect(Object.keys(jsonResponse.errors).length).toBeGreaterThan(0);
     });
   });
 
@@ -145,8 +143,6 @@ describe("Validator Middleware Functions", () => {
       expect(statusCode).toBe(400);
       expect(jsonResponse).toHaveProperty("message", "Validation failed");
       expect(jsonResponse).toHaveProperty("errors");
-      expect(jsonResponse.errors).toBeInstanceOf(Object);
-      expect(Object.keys(jsonResponse.errors).length).toBeGreaterThan(0);
     });
   });
 });

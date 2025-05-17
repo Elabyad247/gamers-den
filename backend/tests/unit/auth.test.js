@@ -43,16 +43,14 @@ describe("Authentication Middleware", () => {
       expect(jsonResponse).toBeNull();
     });
 
-    test("should return 401 when user is not authenticated", () => {
+    test("should return 401 when user is Authentication required", () => {
       req.session.user = null;
 
       isAuthenticated(req, res, next);
 
       expect(nextCalled).toBeFalsy();
       expect(statusCode).toBe(401);
-      expect(jsonResponse).toMatchObject({
-        message: "Authentication required",
-      });
+      expect(jsonResponse).toHaveProperty("message", "Authentication required");
     });
   });
 
@@ -79,7 +77,7 @@ describe("Authentication Middleware", () => {
   });
 
   describe("isNotAuthenticated middleware", () => {
-    test("should call next() when user is not authenticated", () => {
+    test("should call next() when user is Authentication required", () => {
       req.session.user = null;
 
       isNotAuthenticated(req, res, next);
@@ -96,9 +94,7 @@ describe("Authentication Middleware", () => {
 
       expect(nextCalled).toBeFalsy();
       expect(statusCode).toBe(400);
-      expect(jsonResponse).toMatchObject({
-        message: "Already authenticated",
-      });
+      expect(jsonResponse).toHaveProperty("message", "Already authenticated");
       expect(jsonResponse).toHaveProperty("redirect", true);
     });
   });
