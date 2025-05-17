@@ -238,8 +238,6 @@ describe("User Data Validation", () => {
     const result = validateUserData(validUser);
     expect(result.isValid).toBeTruthy();
     expect(result.errors).toEqual({});
-    expect(result.errors).toBeInstanceOf(Object);
-    expect(Object.keys(result.errors)).toHaveLength(0);
   });
 
   test("should return error when lastName is missing or empty", () => {
@@ -270,8 +268,6 @@ describe("User Data Validation", () => {
     const result = validateUserData(invalidUser);
     expect(result.isValid).toBeFalsy();
     expect(result.errors).not.toBeNull();
-    expect(result.errors).toBeInstanceOf(Object);
-    expect(Object.keys(result.errors)).not.toHaveLength(0);
     expect(result.errors).toHaveProperty("firstName");
     expect(result.errors).toHaveProperty("email");
     expect(result.errors).toHaveProperty("password");
@@ -308,7 +304,6 @@ describe("Game Data Validation", () => {
     const result = validateGameData(validGame);
     expect(result.isValid).toBeTruthy();
     expect(result.errors).toEqual({});
-    expect(Object.keys(result.errors)).toHaveLength(0);
   });
 
   test("should return error when title is missing", () => {
@@ -353,8 +348,6 @@ describe("Game Data Validation", () => {
     const result = validateGameData(invalidGame);
     expect(result.isValid).toBeFalsy();
     expect(result.errors).not.toBeNull();
-    expect(result.errors).toBeInstanceOf(Object);
-    expect(Object.keys(result.errors)).not.toHaveLength(0);
     expect(result.errors).toHaveProperty("title");
     expect(result.errors).toHaveProperty("description");
     expect(result.errors).toHaveProperty("price");

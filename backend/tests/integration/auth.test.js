@@ -176,15 +176,6 @@ describe("Authentication API", () => {
       expect(response.status).toBe(200);
       expect(response.body.email).toBe(userData.email);
     });
-
-    it("should handle server error in getCurrentUser", async () => {
-      const appWithBrokenSession = require("express")();
-      appWithBrokenSession.get("/auth/me", (req, res) => {
-        throw new Error("Test error");
-      });
-      const response = await request(appWithBrokenSession).get("/auth/me");
-      expect(response.status).toBe(500);
-    });
   });
 
   describe("POST /auth/logout", () => {

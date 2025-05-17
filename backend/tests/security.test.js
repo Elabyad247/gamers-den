@@ -17,9 +17,10 @@ describe("Security Tests", () => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     expect(hashedPassword).not.toBe(password);
-    expect(hashedPassword.startsWith("$2b$")).toBe(true);
+    expect(hashedPassword.startsWith("$2b$")).toBeTruthy();
+    expect(hashedPassword.split("$")[3]).toBe("10");
     const isMatch = await bcrypt.compare(password, hashedPassword);
-    expect(isMatch).toBe(true);
+    expect(isMatch).toBeTruthy();
   });
 
   test("Session cookie should have secure flags", async () => {
@@ -102,6 +103,7 @@ describe("Security Tests", () => {
     expect(response.body).toHaveProperty("message");
     expect(response.body.message).toMatch(/Validation failed/);
   });
+
   test("API should include security headers", async () => {
     const response = await request(app).get("/games");
     expect(response.headers).toHaveProperty("x-xss-protection");

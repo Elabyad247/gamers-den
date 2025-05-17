@@ -21,7 +21,6 @@ const createGame = async (req, res) => {
 
     res.status(201).json({ message: "Game created successfully", game });
   } catch (error) {
-    console.error("Error creating game:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -54,7 +53,6 @@ const updateGame = async (req, res) => {
 
     res.status(200).json({ message: "Game updated successfully", game });
   } catch (error) {
-    console.error("Error updating game:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

@@ -15,7 +15,6 @@ beforeAll(async () => {
     await mongoose.connection.close();
   }
   await mongoose.connect(mongoUri);
-  console.log(`Connected to test database: ${mongoose.connection.name}`);
   await User.deleteMany({});
   await Game.deleteMany({});
 });
