@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
+const helmet = require("helmet");
 const { connectDB } = require("./utils/db");
 const authController = require("./controllers/authController");
 const gameController = require("./controllers/gameController");
@@ -21,6 +22,8 @@ connectDB();
 
 const app = express();
 
+app.use(helmet());
+
 app.use(
   cors({
     origin: "http://localhost:3001",
@@ -33,8 +36,10 @@ app.use(express.json());
 app.use(
   session({
     secret: "20f2ee7cf9027a789108895f9b4a3ee6763e8fe984e86082c19d5875cf6637e5",
+    resave: false,
     cookie: {
       maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
     },
   })
 );
@@ -72,8 +77,8 @@ app.put(
 );
 app.delete("/games/:id", isAuthenticated, isAdmin, gameController.deleteGame);
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-module.exports = { app };
+module.exports = { app, server };

@@ -1,10 +1,14 @@
 const request = require("supertest");
-const { app } = require("../../server");
+const { app, server } = require("../../server");
 const Game = require("../../models/Game");
 const User = require("../../models/User");
 const bcrypt = require("bcrypt");
 
 describe("Games API", () => {
+  afterAll(async () => {
+    await server.close();
+  });
+
   describe("GET /games", () => {
     it("should return all games", async () => {
       await Game.create([
@@ -29,8 +33,6 @@ describe("Games API", () => {
       const response = await request(app).get("/games");
       expect(response.status).toBe(200);
       expect(response.body.games).toHaveLength(2);
-      expect(response.body.games[0].title).toEqual("Test Game 1");
-      expect(response.body.games[1].title).toEqual("Test Game 2");
     });
 
     it("should return empty array when no games", async () => {

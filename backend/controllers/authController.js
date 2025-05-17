@@ -25,7 +25,6 @@ const register = async (req, res) => {
       password: hashedPassword,
       mobile,
       gender,
-      role: "admin",
     });
     if (!user) {
       return res

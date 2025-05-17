@@ -1,9 +1,13 @@
 const request = require("supertest");
-const { app } = require("../../server");
+const { app, server } = require("../../server");
 const User = require("../../models/User");
 const bcrypt = require("bcrypt");
 
 describe("Authentication API", () => {
+  afterAll(async () => {
+    await server.close();
+  });
+
   describe("POST /auth/register", () => {
     it("should register a new user", async () => {
       const userData = {
